@@ -304,13 +304,30 @@ select:focus {
 }
 
 .practice-summary {
-  margin: 0 0 22px;
+  margin: 0 0 8px;
   color: var(--red-ink);
   font-family: var(--font-display);
   font-weight: 600;
   letter-spacing: .08em;
   text-transform: uppercase;
   font-size: 13px;
+}
+
+.tap-hint {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 20px;
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.tap-hint svg {
+  width: 15px;
+  height: 15px;
+  color: var(--red);
+  flex: 0 0 auto;
 }
 
 /* ---------- Views / tabs ---------- */
@@ -478,7 +495,18 @@ select:focus {
   font-weight: 800;
   color: rgba(246, 236, 227, .3);
   background: transparent;
+  cursor: pointer;
   transition: transform .18s ease;
+}
+
+@keyframes notePing {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.42); }
+  100% { transform: scale(1); }
+}
+
+.note.pinged {
+  animation: notePing .34s ease;
 }
 
 .note.in-scale {
@@ -829,55 +857,78 @@ code {
 }
 
 /* ---------- Triads ---------- */
-.triad-table {
-  display: grid;
-  gap: 10px;
+.chip-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
-.triad-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px 10px;
+.t-chip {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  width: 100%;
-  text-align: left;
+  justify-content: center;
+  gap: 2px;
+  min-width: 64px;
+  min-height: 56px;
+  padding: 8px 12px;
   border: 1px solid var(--edge);
+  border-radius: 12px;
   background: var(--panel-2);
-  border-radius: 10px;
-  padding: 12px;
-  cursor: pointer;
-  font: inherit;
   color: var(--ink);
+  font: inherit;
+  cursor: pointer;
   transition: border-color .2s ease, background .2s ease, transform .2s ease;
 }
 
-.triad-row:hover {
+.t-chip b {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 18px;
+  letter-spacing: .03em;
+}
+
+.t-chip span {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.t-chip:hover {
   border-color: var(--edge-strong);
   transform: translateY(-1px);
 }
 
-.triad-row.active {
+.t-chip.active {
   border-color: var(--red);
   background: var(--red-soft);
-  box-shadow: 0 0 0 1px var(--red), 0 8px 20px rgba(230, 57, 80, .16);
+  box-shadow: 0 0 0 1px var(--red), 0 8px 20px rgba(230, 57, 80, .18);
 }
 
-.triad-row strong {
+.t-chip.active span {
+  color: var(--red-ink);
+}
+
+.triad-detail {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--edge);
+}
+
+.triad-detail strong {
+  display: block;
   font-family: var(--font-display);
   font-weight: 600;
   letter-spacing: .02em;
+  font-size: 20px;
+  margin-bottom: 6px;
+  color: var(--ink);
 }
 
-.triad-row span {
-  color: var(--muted);
-  font-weight: 700;
-  justify-self: end;
-}
-
-.triad-row small {
-  grid-column: 1 / -1;
-  color: var(--muted);
-  font-weight: 600;
+.triad-detail-notes {
+  color: var(--ink) !important;
+  font-weight: 800;
+  margin: 0 0 8px;
 }
 
 /* ---------- Voicing / method ---------- */

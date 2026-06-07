@@ -1,12 +1,12 @@
 const NOTES = ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"];
 const MAX_FRET = 17;
 const STRINGS = [
-  { label: "e", note: "E" },
-  { label: "B", note: "B" },
-  { label: "G", note: "G" },
-  { label: "D", note: "D" },
-  { label: "A", note: "A" },
-  { label: "E", note: "E" }
+  { label: "e", note: "E", midi: 64 },
+  { label: "B", note: "B", midi: 59 },
+  { label: "G", note: "G", midi: 55 },
+  { label: "D", note: "D", midi: 50 },
+  { label: "A", note: "A", midi: 45 },
+  { label: "E", note: "E", midi: 40 }
 ];
 
 const SCALES = {
@@ -340,6 +340,58 @@ function mapKey(stringLabel, fret) {
   return `${stringLabel}:${fret}`;
 }
 
+/* ---- Audio: tap a fret to hear it (Karplus-Strong plucked string) ---- */
+let audioCtx = null;
+
+function getAudioCtx() {
+  if (!audioCtx) {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return null;
+    audioCtx = new Ctx();
+  }
+  if (audioCtx.state === "suspended") audioCtx.resume();
+  return audioCtx;
+}
+
+function midiToFreq(midi) {
+  return 440 * Math.pow(2, (midi - 69) / 12);
+}
+
+function pluck(midi) {
+  const ctx = getAudioCtx();
+  if (!ctx) return;
+  const freq = midiToFreq(midi);
+  const sr = ctx.sampleRate;
+  const dur = 1.7;
+  const len = Math.floor(sr * dur);
+  const buffer = ctx.createBuffer(1, len, sr);
+  const out = buffer.getChannelData(0);
+  const n = Math.max(2, Math.round(sr / freq));
+  const ring = new Float32Array(n);
+  for (let i = 0; i < n; i += 1) ring[i] = Math.random() * 2 - 1;
+  const damping = 0.9955;
+  let pos = 0;
+  for (let i = 0; i < len; i += 1) {
+    const avg = (ring[pos] + ring[(pos + 1) % n]) * 0.5 * damping;
+    ring[pos] = avg;
+    out[i] = avg;
+    pos = (pos + 1) % n;
+  }
+  const src = ctx.createBufferSource();
+  src.buffer = buffer;
+  const lp = ctx.createBiquadFilter();
+  lp.type = "lowpass";
+  lp.frequency.value = 5000;
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.85, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.0008, ctx.currentTime + dur);
+  src.connect(lp);
+  lp.connect(gain);
+  gain.connect(ctx.destination);
+  src.start();
+  src.stop(ctx.currentTime + dur);
+}
+
 function resolveRiffPositions(root, riff, position) {
   return riff.degrees.map((degree, index) => {
     const note = degreeNote(root, degree);
@@ -386,7 +438,7 @@ function buildMapData(mode, root, position) {
       focus,
       showPosition: true,
       title: `${triad.label} · ${degreeNote(root, triad.rootDegree)} ${triad.type} · ${activeCagedShape().shape} shape`,
-      detail: `${triadFormula(triad)}。${triad.use} 喺第 ${position.start}-${position.end} 格內用呢三粒音做 backup voicing 或 lead landing notes。`
+      detail: `${triadFormula(triad)}。喺第 ${position.start}-${position.end} 格亮起呢三粒音，可做 backup voicing 或 lead landing。`
     };
   }
 
@@ -458,6 +510,7 @@ function buildFretboard(container, mode) {
       const dot = document.createElement("span");
       dot.className = "note";
       dot.textContent = note;
+      dot.dataset.midi = String(string.midi + fret);
       if (data.notes.includes(note)) dot.classList.add("in-scale");
       if (note === root) dot.classList.add("root");
       if (data.chordTones.includes(note)) dot.classList.add("triad");
@@ -571,17 +624,33 @@ function renderCaged() {
   });
 }
 
+function triadTypeShort(type) {
+  return { Major: "", Minor: "m", Diminished: "dim", Augmented: "aug", Sus2: "sus2", Sus4: "sus4" }[type] ?? type;
+}
+
 function renderTriads() {
   const root = keySelect.value;
   const options = activeTriads();
-  document.querySelector("#triadTable").innerHTML = options.map((triad, triadIndex) => `
-    <button class="triad-row ${triadIndex === selectedTriadIndex ? "active" : ""}" type="button" data-triad="${triadIndex}">
-      <strong>${triad.label} · ${degreeNote(root, triad.rootDegree)} ${triad.type}</strong>
-      <span>${triadFormula(triad)} · ${triadOptionNotes(root, triad).join(" ")}</span>
-      <small>${triad.use}</small>
-    </button>
-  `).join("");
-  document.querySelectorAll("[data-triad]").forEach(button => {
+
+  document.querySelector("#triadChips").innerHTML = options.map((triad, triadIndex) => {
+    const chord = `${degreeNote(root, triad.rootDegree)}${triadTypeShort(triad.type)}`;
+    return `
+      <button class="t-chip ${triadIndex === selectedTriadIndex ? "active" : ""}" type="button" data-triad="${triadIndex}">
+        <b>${triad.label}</b>
+        <span>${chord}</span>
+      </button>
+    `;
+  }).join("");
+
+  const selected = options[selectedTriadIndex] || options[0];
+  const chordRoot = degreeNote(root, selected.rootDegree);
+  document.querySelector("#triadDetail").innerHTML = `
+    <strong>${selected.label} · ${chordRoot} ${selected.type}</strong>
+    <p class="triad-detail-notes">${triadFormula(selected)} · ${triadOptionNotes(root, selected).join(" ")}</p>
+    <p class="body-copy">${selected.use}</p>
+  `;
+
+  document.querySelectorAll("#triadChips [data-triad]").forEach(button => {
     button.addEventListener("click", () => {
       selectedTriadIndex = Number(button.dataset.triad);
       update();
@@ -751,6 +820,17 @@ scaleSelect.addEventListener("change", () => {
 
 document.querySelectorAll(".bottom-menu [data-tab]").forEach(button => {
   button.addEventListener("click", () => setTab(button.dataset.tab));
+});
+
+document.querySelectorAll(".fretboard").forEach(board => {
+  board.addEventListener("click", event => {
+    const dot = event.target.closest(".note");
+    if (!dot || dot.dataset.midi === undefined) return;
+    pluck(Number(dot.dataset.midi));
+    dot.classList.remove("pinged");
+    void dot.offsetWidth;
+    dot.classList.add("pinged");
+  });
 });
 
 document.querySelectorAll("[data-open-overlay]").forEach(button => {

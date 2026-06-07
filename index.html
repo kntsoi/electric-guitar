@@ -24,7 +24,16 @@
     <header class="app-header">
       <div class="brand">
         <span class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none"><path d="M12 2.5c-4.2 0-7 2.2-7 5.4 0 2.1 1 4.7 2.6 8 1.3 2.7 2.9 5.1 3.6 6.1.4.6 1.2.6 1.6 0 .7-1 2.3-3.4 3.6-6.1C20 12.6 21 10 21 7.9c0-3.2-2.8-5.4-7-5.4Z" fill="currentColor"></path><path d="M12 8.4 10.4 13h3.2L12 8.4Z" fill="#0E0A09"></path></svg>
+          <svg viewBox="0 0 48 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="pickGrad" x1="24" y1="4" x2="24" y2="52" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#FF6076"></stop>
+                <stop offset="1" stop-color="#B11E32"></stop>
+              </linearGradient>
+            </defs>
+            <path d="M24 4C33 4 42 9.5 42 19.5C42 29 33 43 26.5 51C25.3 52.4 22.7 52.4 21.5 51C15 43 6 29 6 19.5C6 9.5 15 4 24 4Z" fill="url(#pickGrad)"></path>
+            <path d="M27.5 15L18.5 31H23.5L21 41.5L31 25H25.5L27.5 15Z" fill="#0E0A09"></path>
+          </svg>
         </span>
         <span class="brand-text">Electric Guitar <em>Lab</em></span>
       </div>
@@ -53,6 +62,10 @@
         </label>
       </section>
       <p id="practiceSummary" class="practice-summary">C Major Pentatonic · C shape</p>
+      <p class="tap-hint">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z" fill="currentColor"></path><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 6a8 8 0 0 1 0 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>
+        撳指板上嘅音可以聽聲
+      </p>
 
       <!-- SCALE TAB -->
       <section class="view" data-view="scale">
@@ -116,35 +129,34 @@
             <span><b class="position-dot"></b>Hand position</span>
           </div>
         </article>
-        <div class="view-grid">
-          <article class="panel">
-            <div class="section-title">
-              <p class="eyebrow">Diatonic Triads</p>
-              <h2>揀一個三和弦</h2>
+        <article class="panel">
+          <div class="section-title">
+            <p class="eyebrow">Diatonic Triads</p>
+            <h2>揀一個三和弦</h2>
+          </div>
+          <div id="triadChips" class="chip-picker"></div>
+          <div id="triadDetail" class="triad-detail"></div>
+        </article>
+        <article class="panel">
+          <div class="section-title">
+            <p class="eyebrow">Worship Voicings</p>
+            <h2>敬拜常用 triad 玩法</h2>
+          </div>
+          <div class="voicing-grid">
+            <div>
+              <h3>Backup</h3>
+              <p>用 D/G/B 或 G/B/e 三條弦彈 upper triads，少彈低音，避免撞 bass 同 keyboard 左手。</p>
             </div>
-            <div id="triadTable" class="triad-table"></div>
-          </article>
-          <article class="panel">
-            <div class="section-title">
-              <p class="eyebrow">Worship Voicings</p>
-              <h2>敬拜常用 triad 玩法</h2>
+            <div>
+              <h3>Lead</h3>
+              <p>圍繞 I、IV、V、vi 嘅 triad tones 做 melody，delay repeat 會自然填滿空間。</p>
             </div>
-            <div class="voicing-grid single">
-              <div>
-                <h3>Backup</h3>
-                <p>用 D/G/B 或 G/B/e 三條弦彈 upper triads，少彈低音，避免撞 bass 同 keyboard 左手。</p>
-              </div>
-              <div>
-                <h3>Lead</h3>
-                <p>圍繞 I、IV、V、vi 嘅 triad tones 做 melody，delay repeat 會自然填滿空間。</p>
-              </div>
-              <div>
-                <h3>Transition</h3>
-                <p>由 chord tone 滑入下一個 triad，例如 C 去 G 時，由 E 滑去 D 或 B。</p>
-              </div>
+            <div>
+              <h3>Transition</h3>
+              <p>由 chord tone 滑入下一個 triad，例如 C 去 G 時，由 E 滑去 D 或 B。</p>
             </div>
-          </article>
-        </div>
+          </div>
+        </article>
       </section>
 
       <!-- RIFF TAB -->
