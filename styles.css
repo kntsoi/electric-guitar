@@ -1106,11 +1106,11 @@ body.overlay-open {
   left: 50%;
   bottom: max(12px, env(safe-area-inset-bottom));
   z-index: 30;
-  width: min(480px, calc(100% - 24px));
+  width: min(520px, calc(100% - 20px));
   transform: translateX(-50%);
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 5px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 4px;
   padding: 7px;
   border: 1px solid var(--edge-strong);
   border-radius: 16px;
@@ -1161,6 +1161,147 @@ body.overlay-open {
   color: #fff;
   background: linear-gradient(160deg, var(--red), var(--red-deep));
   box-shadow: 0 6px 18px rgba(230, 57, 80, .4);
+}
+
+.bottom-menu #moreBtn.metro-on {
+  color: var(--red-bright);
+}
+
+.bottom-menu #moreBtn.metro-on svg {
+  animation: metroPulse .5s ease-in-out infinite alternate;
+}
+
+@keyframes metroPulse {
+  from { opacity: .55; }
+  to { opacity: 1; }
+}
+
+/* ---- Metronome (More sheet) ---- */
+.metronome {
+  background: var(--panel-2);
+  border: 1px solid var(--edge);
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+
+.metro-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.metro-display {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+}
+
+.metro-display strong {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.metro-display span {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: .12em;
+  color: var(--muted);
+}
+
+.metro-beats {
+  display: flex;
+  gap: 9px;
+}
+
+.metro-beats .beat {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--panel-3);
+  border: 1px solid var(--edge-strong);
+  transition: transform .08s ease, background .08s ease, box-shadow .08s ease;
+}
+
+.metro-beats .beat.on {
+  background: var(--red);
+  box-shadow: 0 0 10px var(--red-glow);
+  transform: scale(1.18);
+}
+
+.metro-beats .beat.accent.on {
+  background: var(--gold);
+  box-shadow: 0 0 12px var(--gold-soft);
+}
+
+#bpmSlider {
+  width: 100%;
+  height: 6px;
+  margin: 4px 0 14px;
+  accent-color: var(--red);
+  cursor: pointer;
+}
+
+.metro-controls {
+  display: grid;
+  grid-template-columns: 56px 1fr 56px;
+  gap: 10px;
+}
+
+.metro-step {
+  min-height: 48px;
+  border: 1px solid var(--edge-strong);
+  border-radius: 10px;
+  background: var(--panel-3);
+  color: var(--ink);
+  font-size: 22px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: border-color .2s ease, color .2s ease;
+}
+
+.metro-step:hover,
+.metro-step:focus-visible {
+  border-color: var(--red);
+  color: var(--red-ink);
+  outline: none;
+}
+
+.metro-toggle {
+  min-height: 48px;
+  border: 0;
+  border-radius: 10px;
+  background: linear-gradient(160deg, var(--red), var(--red-deep));
+  color: #fff;
+  font: inherit;
+  font-weight: 800;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.metro-toggle.running {
+  background: var(--panel-3);
+  color: var(--red-ink);
+  box-shadow: inset 0 0 0 1px var(--red);
+}
+
+.more-links {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.more-links .ghost-button {
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ---------- Install button ---------- */

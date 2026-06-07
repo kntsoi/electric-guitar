@@ -392,6 +392,116 @@ function pluck(midi) {
   src.stop(ctx.currentTime + dur);
 }
 
+let seqTimers = [];
+
+function stopSequence() {
+  seqTimers.forEach(timer => window.clearTimeout(timer));
+  seqTimers = [];
+}
+
+function pingDot(dot) {
+  if (!dot) return;
+  dot.classList.remove("pinged");
+  void dot.offsetWidth;
+  dot.classList.add("pinged");
+}
+
+function playChord(triadOption) {
+  if (!triadOption) return;
+  const chordRoot = degreeNote(keySelect.value, triadOption.rootDegree);
+  const triad = TRIADS.find(item => item.type === triadOption.type) || TRIADS[0];
+  const base = 48 + noteIndex(chordRoot);
+  triad.intervals.forEach((interval, i) => window.setTimeout(() => pluck(base + interval), i * 34));
+}
+
+function playRiff(riff) {
+  if (!riff) return;
+  const rootMidi = 60 + noteIndex(keySelect.value);
+  const step = 30000 / metro.bpm; // eighth notes
+  stopSequence();
+  riff.degrees.forEach((degree, i) => {
+    seqTimers.push(window.setTimeout(() => {
+      pluck(rootMidi + DEGREE_INTERVALS[degree]);
+      const dot = [...document.querySelectorAll("#fretboard-riff .note.map-focus")]
+        .find(node => node.textContent === String(i + 1));
+      pingDot(dot);
+    }, i * step));
+  });
+}
+
+/* ---- Metronome ---- */
+const metro = { running: false, bpm: 90, timer: null, beat: 0 };
+
+function metroClick(accent) {
+  const ctx = getAudioCtx();
+  if (!ctx) return;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  const t = ctx.currentTime;
+  osc.type = "square";
+  osc.frequency.value = accent ? 2000 : 1300;
+  gain.gain.setValueAtTime(0.0001, t);
+  gain.gain.exponentialRampToValueAtTime(accent ? 0.5 : 0.3, t + 0.001);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(t);
+  osc.stop(t + 0.06);
+}
+
+function metroRenderBeat(beatInBar) {
+  document.querySelectorAll("#metroBeats .beat").forEach((node, i) => {
+    node.classList.toggle("on", i === beatInBar);
+  });
+}
+
+function metroTick() {
+  const beatInBar = metro.beat % 4;
+  metroClick(beatInBar === 0);
+  metroRenderBeat(beatInBar);
+  metro.beat += 1;
+}
+
+function updateMetroUI() {
+  const toggle = document.querySelector("#metroToggle");
+  const moreBtn = document.querySelector("#moreBtn");
+  if (toggle) {
+    toggle.textContent = metro.running ? "停止節拍器" : "開始節拍器";
+    toggle.classList.toggle("running", metro.running);
+  }
+  if (moreBtn) moreBtn.classList.toggle("metro-on", metro.running);
+}
+
+function startMetro() {
+  if (metro.running) return;
+  getAudioCtx();
+  metro.running = true;
+  metro.beat = 0;
+  metroTick();
+  metro.timer = window.setInterval(metroTick, 60000 / metro.bpm);
+  updateMetroUI();
+}
+
+function stopMetro() {
+  metro.running = false;
+  if (metro.timer) window.clearInterval(metro.timer);
+  metro.timer = null;
+  document.querySelectorAll("#metroBeats .beat").forEach(node => node.classList.remove("on"));
+  updateMetroUI();
+}
+
+function setBpm(value) {
+  metro.bpm = Math.min(220, Math.max(40, Math.round(value)));
+  const valueNode = document.querySelector("#bpmValue");
+  const slider = document.querySelector("#bpmSlider");
+  if (valueNode) valueNode.textContent = metro.bpm;
+  if (slider) slider.value = metro.bpm;
+  if (metro.running) {
+    window.clearInterval(metro.timer);
+    metro.timer = window.setInterval(metroTick, 60000 / metro.bpm);
+  }
+}
+
 function resolveRiffPositions(root, riff, position) {
   return riff.degrees.map((degree, index) => {
     const note = degreeNote(root, degree);
@@ -654,6 +764,7 @@ function renderTriads() {
     button.addEventListener("click", () => {
       selectedTriadIndex = Number(button.dataset.triad);
       update();
+      playChord(activeTriads()[selectedTriadIndex]);
     });
   });
 }
@@ -682,6 +793,7 @@ function renderRiffs() {
     button.addEventListener("click", () => {
       selectedRiffIndex = Number(button.dataset.riff);
       update();
+      playRiff(activeRiffs()[selectedRiffIndex]);
     });
   });
 }
@@ -772,6 +884,7 @@ function setTab(tab, { scroll = true } = {}) {
 function openOverlay(name) {
   const overlay = document.querySelector(`.overlay[data-overlay="${name}"]`);
   if (!overlay) return;
+  document.querySelectorAll(".overlay[data-overlay]").forEach(node => { node.hidden = true; });
   if (name === "tone") renderTones();
   overlay.hidden = false;
   document.body.classList.add("overlay-open");
@@ -840,6 +953,15 @@ document.querySelectorAll("[data-open-overlay]").forEach(button => {
 document.querySelectorAll("[data-close-overlay]").forEach(button => {
   button.addEventListener("click", closeOverlay);
 });
+
+const bpmSlider = document.querySelector("#bpmSlider");
+if (bpmSlider) bpmSlider.addEventListener("input", event => setBpm(Number(event.target.value)));
+const bpmDown = document.querySelector("#bpmDown");
+if (bpmDown) bpmDown.addEventListener("click", () => setBpm(metro.bpm - 4));
+const bpmUp = document.querySelector("#bpmUp");
+if (bpmUp) bpmUp.addEventListener("click", () => setBpm(metro.bpm + 4));
+const metroToggle = document.querySelector("#metroToggle");
+if (metroToggle) metroToggle.addEventListener("click", () => (metro.running ? stopMetro() : startMetro()));
 
 document.addEventListener("keydown", event => {
   if (event.key === "Escape") closeOverlay();

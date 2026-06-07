@@ -1,4 +1,4 @@
-const CACHE_NAME = "guitar-lab-v9";
+const CACHE_NAME = "guitar-lab-v10";
 const APP_SHELL = [
   "./",
   "./index.html",

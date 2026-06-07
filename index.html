@@ -37,10 +37,6 @@
         </span>
         <span class="brand-text">Electric Guitar <em>Lab</em></span>
       </div>
-      <div class="header-actions">
-        <button class="ghost-button" type="button" data-open-overlay="caged">CAGED 系統</button>
-        <button class="ghost-button" type="button" data-open-overlay="tone">MainStage 音色</button>
-      </div>
     </header>
 
     <main id="mainContent">
@@ -292,6 +288,44 @@
       </div>
     </div>
 
+    <!-- MORE OVERLAY -->
+    <div class="overlay" data-overlay="more" hidden>
+      <div class="overlay-backdrop" data-close-overlay></div>
+      <div class="overlay-card" role="dialog" aria-modal="true" aria-label="More">
+        <button class="overlay-close" type="button" data-close-overlay aria-label="Close">×</button>
+        <div class="section-title">
+          <p class="eyebrow">More</p>
+          <h2>更多</h2>
+        </div>
+
+        <div class="metronome">
+          <div class="metro-top">
+            <div class="metro-display">
+              <strong id="bpmValue">90</strong>
+              <span>BPM</span>
+            </div>
+            <div class="metro-beats" id="metroBeats" aria-hidden="true">
+              <span class="beat accent"></span>
+              <span class="beat"></span>
+              <span class="beat"></span>
+              <span class="beat"></span>
+            </div>
+          </div>
+          <input type="range" id="bpmSlider" min="40" max="220" value="90" step="1" aria-label="Tempo BPM">
+          <div class="metro-controls">
+            <button type="button" id="bpmDown" class="metro-step" aria-label="Slower">−</button>
+            <button type="button" id="metroToggle" class="metro-toggle">開始節拍器</button>
+            <button type="button" id="bpmUp" class="metro-step" aria-label="Faster">+</button>
+          </div>
+        </div>
+
+        <div class="more-links">
+          <button class="ghost-button" type="button" data-open-overlay="caged">CAGED 系統</button>
+          <button class="ghost-button" type="button" data-open-overlay="tone">MainStage 音色</button>
+        </div>
+      </div>
+    </div>
+
     <nav class="bottom-menu" aria-label="Practice tabs">
       <button type="button" data-tab="scale">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18V14"></path><path d="M9 18V10"></path><path d="M14 18V6"></path><path d="M19 18V3"></path></svg>
@@ -308,6 +342,10 @@
       <button type="button" data-tab="power">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 6h4l6 6-6 6H7l6-6-6-6Z"></path><path d="M13 8.5 16.5 12 13 15.5"></path></svg>
         <span>Power</span>
+      </button>
+      <button type="button" data-open-overlay="more" id="moreBtn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4h6l2.5 16h-11L9 4Z"></path><path d="M12 8.5 14.5 14"></path><path d="M6.5 16.5h11"></path></svg>
+        <span>More</span>
       </button>
     </nav>
 
