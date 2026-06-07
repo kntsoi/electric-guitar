@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Worship Electric Guitar Lab</title>
+    <meta name="description" content="Interactive worship electric guitar practice app for key, scale, CAGED shapes, riffs, power chords, and MainStage tones.">
+    <meta name="theme-color" content="#176b68">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Guitar Lab">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#workbench">Skip to practice workbench</a>
+    <header class="app-header">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">教會敬拜隊 · Pop Rock Electric Guitar</p>
+          <h1>Worship Electric Guitar Lab</h1>
+        </div>
+        <div class="hero-instrument" aria-hidden="true">
+          <div class="guitar-body"></div>
+          <div class="guitar-neck">
+            <span></span><span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div class="pickup one"></div>
+          <div class="pickup two"></div>
+        </div>
+      </section>
+    </header>
+
+    <main>
+      <section id="workbench" class="workbench">
+        <div class="workbench-header">
+          <div>
+            <p class="eyebrow">Core Selector</p>
+            <h2>Key · Scale · CAGED Shape</h2>
+          </div>
+          <p id="practiceSummary" class="summary-pill">C Major Pentatonic · C shape · scale</p>
+        </div>
+
+        <section class="control-strip core-selector" aria-label="Interactive guitar controls">
+          <label class="selector-card">
+            <span class="selector-index">01</span>
+            <span class="selector-name">Key</span>
+            <select id="keySelect"></select>
+          </label>
+          <label class="selector-card">
+            <span class="selector-index">02</span>
+            <span class="selector-name">Scale</span>
+            <select id="scaleSelect"></select>
+          </label>
+          <label class="selector-card">
+            <span class="selector-index">03</span>
+            <span class="selector-name">CAGED Shape</span>
+            <select id="shapeSelect"></select>
+          </label>
+        </section>
+
+        <nav class="workflow-steps" aria-label="Practice workflow">
+          <a href="#scales"><b>1</b><span>Map</span><small>Scale / triad / riff / power</small></a>
+          <a href="#triads"><b>2</b><span>Target</span><small>Chord tones and voicings</small></a>
+          <a href="#riffs"><b>3</b><span>Apply</span><small>Riffs and lead movement</small></a>
+          <a href="#mainstage"><b>4</b><span>Tone</span><small>MainStage patches</small></a>
+        </nav>
+
+        <section id="scales" class="section-grid">
+          <article class="panel wide">
+            <div class="section-title">
+              <p class="eyebrow">Scale Map</p>
+              <h2>音階指板圖</h2>
+            </div>
+            <div id="fretboard" class="fretboard" aria-label="Interactive fretboard"></div>
+            <div class="map-toolbar" aria-label="Fretboard map mode">
+              <button class="map-mode active" type="button" data-map-mode="scale">Scale</button>
+              <button class="map-mode" type="button" data-map-mode="triad">Triad</button>
+              <button class="map-mode" type="button" data-map-mode="riff">Riff</button>
+              <button class="map-mode" type="button" data-map-mode="power">Power</button>
+            </div>
+            <div class="map-status">
+              <strong id="mapModeTitle">Scale map</strong>
+              <span id="mapModeDetail">All scale tones in the current CAGED position.</span>
+            </div>
+            <div class="legend">
+              <span><b class="root-dot"></b>Root</span>
+              <span><b class="tone-dot"></b>Scale tone</span>
+              <span><b class="triad-dot"></b>Triad tone</span>
+              <span><b class="position-dot"></b>Current hand position</span>
+              <span><b class="focus-dot"></b>Selected pattern</span>
+            </div>
+          </article>
+
+          <article class="panel focus-panel">
+            <div class="section-title">
+              <p class="eyebrow">Current Focus</p>
+              <h2 id="currentTitle">C Major Pentatonic</h2>
+            </div>
+            <p id="scaleFormula" class="formula"></p>
+            <p id="scaleUse" class="body-copy"></p>
+            <div id="noteChips" class="chip-row"></div>
+            <div class="finger-panel">
+              <h3 id="positionTitle">手指位</h3>
+              <p id="positionAdvice" class="body-copy"></p>
+              <div id="fingerGuide" class="finger-guide"></div>
+            </div>
+          </article>
+        </section>
+      </section>
+
+      <section class="learning-list">
+        <div class="section-title">
+          <p class="eyebrow">Scale Library</p>
+          <h2>音階介紹</h2>
+        </div>
+        <div class="cards" id="scaleCards"></div>
+      </section>
+
+      <section id="caged" class="section-grid">
+        <article class="panel wide">
+          <div class="section-title">
+            <p class="eyebrow">CAGED System</p>
+            <h2>用五個形狀連通成條 neck</h2>
+          </div>
+          <div class="caged-flow" id="cagedFlow"></div>
+          <p id="cagedAdvice" class="body-copy"></p>
+        </article>
+      </section>
+
+      <section id="triads" class="section-grid">
+        <article class="panel">
+          <div class="section-title">
+            <p class="eyebrow">Scale-aware Triads</p>
+            <h2>跟 scale 變化嘅 triad targets</h2>
+          </div>
+          <div id="triadTable" class="triad-table"></div>
+        </article>
+        <article class="panel wide">
+          <div class="section-title">
+            <p class="eyebrow">Worship Voicings</p>
+            <h2>敬拜常用 triad 玩法</h2>
+          </div>
+          <div class="voicing-grid">
+            <div>
+              <h3>Backup</h3>
+              <p>用 D/G/B 或 G/B/e 三條弦彈 upper triads，少彈低音，避免撞 bass 同 keyboard 左手。</p>
+            </div>
+            <div>
+              <h3>Lead</h3>
+              <p>圍繞 I、IV、V、vi 嘅 triad tones 做 melody，delay repeat 會自然填滿空間。</p>
+            </div>
+            <div>
+              <h3>Transition</h3>
+              <p>由 chord tone 滑入下一個 triad，例如 C 去 G 時，由 E 滑去 D 或 B。</p>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section id="riffs" class="section-grid">
+        <article class="panel wide">
+          <div class="section-title">
+            <p class="eyebrow">Riff Builder</p>
+            <h2>跟 scale 變化嘅 riff 練習</h2>
+          </div>
+          <div id="riffCards" class="riff-grid"></div>
+        </article>
+        <article class="panel">
+          <div class="section-title">
+            <p class="eyebrow">How To Practise</p>
+            <h2>riff 要點練</h2>
+          </div>
+          <ol class="method-list">
+            <li>先用 60 bpm，全部 alternate picking，唔好急住加 delay。</li>
+            <li>每個 riff 都要知道邊粒係 root、3rd、5th，唔好只背手形。</li>
+            <li>每四拍留一個空位，敬拜 lead 最怕填滿晒 vocal 空間。</li>
+            <li>熟咗之後先加 dotted 8th delay，聽 repeat 有冇同鼓撞。</li>
+          </ol>
+        </article>
+      </section>
+
+      <section id="power" class="section-grid">
+        <article class="panel">
+          <div class="section-title">
+            <p class="eyebrow">Power Chords</p>
+            <h2>5 和弦位置</h2>
+          </div>
+          <div id="powerChordCards" class="power-grid"></div>
+        </article>
+        <article class="panel wide">
+          <div class="section-title">
+            <p class="eyebrow">Backup Guitar</p>
+            <h2>power chord 係敬拜隊點用</h2>
+          </div>
+          <div class="voicing-grid">
+            <div>
+              <h3>低把位 build</h3>
+              <p>Verse 後段或 pre-chorus 可以用 palm mute 8th notes，逐步開放右手。</p>
+            </div>
+            <div>
+              <h3>高把位 octave</h3>
+              <p>Lead 可以只彈 root octave，避開 keyboard pad，仍然有 hook 感。</p>
+            </div>
+            <div>
+              <h3>少用大橫掃</h3>
+              <p>有 acoustic 時，電結他 power chord 應短、準、低頻收乾淨。</p>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section id="mainstage" class="mainstage">
+        <div class="section-title">
+          <p class="eyebrow">MainStage Rig</p>
+          <h2>MainStage 音色建議</h2>
+        </div>
+        <div class="tone-layout">
+          <article class="panel">
+            <h3>基本 signal chain</h3>
+            <ol class="method-list compact">
+              <li>Audio Interface：Hi-Z input，input peak 約 -12 dBFS。</li>
+              <li>Noise Gate：只做輕微清理，唔好 cut 走 sustain。</li>
+              <li>Compressor：輕壓，令 clean arpeggio 穩定。</li>
+              <li>Overdrive：低 gain、較高 level，推 amp 而唔係靠 fuzz。</li>
+              <li>Amp Designer：clean 或 edge-of-breakup amp。</li>
+              <li>EQ：低頻 high-pass 80-120 Hz，2-4 kHz 控制刺耳。</li>
+              <li>Delay： dotted 8th / quarter，跟 song tempo。</li>
+              <li>Reverb：plate 或 hall，lead 多啲，backup 少啲。</li>
+            </ol>
+          </article>
+          <article class="panel wide">
+            <h3>推薦 patches</h3>
+            <div id="toneCards" class="tone-cards"></div>
+          </article>
+        </div>
+      </section>
+
+    </main>
+
+    <footer>
+      <p>Built for worship guitar practice: scale knowledge, CAGED fluency, triad targeting, and MainStage-ready tones.</p>
+    </footer>
+
+    <nav class="bottom-menu" aria-label="Quick practice menu">
+      <a href="#workbench">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 12 5l8 6.5"></path><path d="M6.5 10.5V20h11V10.5"></path><path d="M9.5 20v-5h5v5"></path></svg>
+        <span>Lab</span>
+      </a>
+      <a href="#caged">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14"></path><path d="M5 10h14"></path><path d="M5 15h14"></path><path d="M5 20h14"></path><path d="M8 4v17"></path><path d="M13 4v17"></path><path d="M18 4v17"></path></svg>
+        <span>CAGED</span>
+      </a>
+      <a href="#triads">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 4.5 18h15L12 4Z"></path><path d="M8.5 14h7"></path><path d="M10.2 10.5h3.6"></path></svg>
+        <span>Triads</span>
+      </a>
+      <a href="#riffs">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16c3-6 5-6 8 0s5 6 8 0"></path><path d="M4 9c2-3 4-3 6 0s4 3 6 0 3-3 4 0"></path></svg>
+        <span>Riffs</span>
+      </a>
+      <a href="#power">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 6h4l6 6-6 6H7l6-6-6-6Z"></path><path d="M13 8.5 16.5 12 13 15.5"></path></svg>
+        <span>Power</span>
+      </a>
+      <a href="#mainstage">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"></path><path d="M4 17h16"></path><circle cx="8" cy="7" r="2"></circle><circle cx="16" cy="17" r="2"></circle></svg>
+        <span>Tone</span>
+      </a>
+    </nav>
+
+    <button id="installAppButton" class="install-app-button" type="button" hidden>Install app</button>
+
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,54 @@
+{
+  "name": "Worship Electric Guitar Lab",
+  "short_name": "Guitar Lab",
+  "description": "Interactive worship electric guitar practice app for key, scale, CAGED shapes, riffs, power chords, and MainStage tones.",
+  "id": "/",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "background_color": "#eef2f1",
+  "theme_color": "#176b68",
+  "orientation": "portrait-primary",
+  "categories": ["education", "music", "productivity"],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Practice Lab",
+      "short_name": "Lab",
+      "url": "./index.html#workbench",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Scale Map",
+      "short_name": "Scales",
+      "url": "./index.html#scales",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Power Chords",
+      "short_name": "Power",
+      "url": "./index.html#power",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
