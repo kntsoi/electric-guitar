@@ -342,12 +342,23 @@ function mapKey(stringLabel, fret) {
 
 /* ---- Audio: tap a fret to hear it (Karplus-Strong plucked string) ---- */
 let audioCtx = null;
+let masterGain = null;
 
 function getAudioCtx() {
   if (!audioCtx) {
     const Ctx = window.AudioContext || window.webkitAudioContext;
     if (!Ctx) return null;
     audioCtx = new Ctx();
+    masterGain = audioCtx.createGain();
+    masterGain.gain.value = 0.8;
+    const comp = audioCtx.createDynamicsCompressor();
+    comp.threshold.value = -10;
+    comp.knee.value = 18;
+    comp.ratio.value = 6;
+    comp.attack.value = 0.003;
+    comp.release.value = 0.25;
+    masterGain.connect(comp);
+    comp.connect(audioCtx.destination);
   }
   if (audioCtx.state === "suspended") audioCtx.resume();
   return audioCtx;
@@ -357,39 +368,91 @@ function midiToFreq(midi) {
   return 440 * Math.pow(2, (midi - 69) / 12);
 }
 
+const TONE_CONFIGS = {
+  acoustic: { label: "木結他", damping: 0.9955, dur: 1.7, level: 0.85, hp: 80, lp: 5200, drive: false },
+  clean: { label: "電 Clean", damping: 0.997, dur: 2.2, level: 0.8, hp: 110, lp: 6800, drive: false },
+  drive: { label: "電 Distortion", damping: 0.9975, dur: 2.4, level: 0.5, hp: 150, lp: 3200, drive: true, preGain: 7 }
+};
+
+function makeDriveCurve(amount) {
+  const n = 2048;
+  const curve = new Float32Array(n);
+  for (let i = 0; i < n; i += 1) {
+    const x = (i / n) * 2 - 1;
+    curve[i] = (1 + amount) * x / (1 + amount * Math.abs(x));
+  }
+  return curve;
+}
+
+const DRIVE_CURVE = makeDriveCurve(50);
+
+let toneMode = "clean";
+try {
+  const saved = localStorage.getItem("egl-tone");
+  if (saved && TONE_CONFIGS[saved]) toneMode = saved;
+} catch (error) { /* localStorage unavailable */ }
+
 function pluck(midi) {
   const ctx = getAudioCtx();
   if (!ctx) return;
+  const cfg = TONE_CONFIGS[toneMode] || TONE_CONFIGS.clean;
   const freq = midiToFreq(midi);
   const sr = ctx.sampleRate;
-  const dur = 1.7;
+  const dur = cfg.dur;
   const len = Math.floor(sr * dur);
   const buffer = ctx.createBuffer(1, len, sr);
   const out = buffer.getChannelData(0);
   const n = Math.max(2, Math.round(sr / freq));
   const ring = new Float32Array(n);
   for (let i = 0; i < n; i += 1) ring[i] = Math.random() * 2 - 1;
-  const damping = 0.9955;
   let pos = 0;
   for (let i = 0; i < len; i += 1) {
-    const avg = (ring[pos] + ring[(pos + 1) % n]) * 0.5 * damping;
+    const avg = (ring[pos] + ring[(pos + 1) % n]) * 0.5 * cfg.damping;
     ring[pos] = avg;
     out[i] = avg;
     pos = (pos + 1) % n;
   }
   const src = ctx.createBufferSource();
   src.buffer = buffer;
+
+  const env = ctx.createGain();
+  env.gain.setValueAtTime(cfg.level, ctx.currentTime);
+  env.gain.exponentialRampToValueAtTime(0.0008, ctx.currentTime + dur);
+
+  const hp = ctx.createBiquadFilter();
+  hp.type = "highpass";
+  hp.frequency.value = cfg.hp;
   const lp = ctx.createBiquadFilter();
   lp.type = "lowpass";
-  lp.frequency.value = 5000;
-  const gain = ctx.createGain();
-  gain.gain.setValueAtTime(0.85, ctx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.0008, ctx.currentTime + dur);
-  src.connect(lp);
-  lp.connect(gain);
-  gain.connect(ctx.destination);
+  lp.frequency.value = cfg.lp;
+
+  let head = src;
+  if (cfg.drive) {
+    const pre = ctx.createGain();
+    pre.gain.value = cfg.preGain;
+    const shaper = ctx.createWaveShaper();
+    shaper.curve = DRIVE_CURVE;
+    shaper.oversample = "4x";
+    head.connect(pre);
+    pre.connect(shaper);
+    head = shaper;
+  }
+  head.connect(hp);
+  hp.connect(lp);
+  lp.connect(env);
+  env.connect(masterGain || ctx.destination);
   src.start();
   src.stop(ctx.currentTime + dur);
+}
+
+function setTone(mode) {
+  if (!TONE_CONFIGS[mode]) return;
+  toneMode = mode;
+  try { localStorage.setItem("egl-tone", mode); } catch (error) { /* ignore */ }
+  document.querySelectorAll("#toneSelect [data-tone]").forEach(button => {
+    button.classList.toggle("active", button.dataset.tone === mode);
+  });
+  pluck(52);
 }
 
 let seqTimers = [];
@@ -962,6 +1025,11 @@ const bpmUp = document.querySelector("#bpmUp");
 if (bpmUp) bpmUp.addEventListener("click", () => setBpm(metro.bpm + 4));
 const metroToggle = document.querySelector("#metroToggle");
 if (metroToggle) metroToggle.addEventListener("click", () => (metro.running ? stopMetro() : startMetro()));
+
+document.querySelectorAll("#toneSelect [data-tone]").forEach(button => {
+  button.classList.toggle("active", button.dataset.tone === toneMode);
+  button.addEventListener("click", () => setTone(button.dataset.tone));
+});
 
 document.addEventListener("keydown", event => {
   if (event.key === "Escape") closeOverlay();
