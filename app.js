@@ -479,12 +479,13 @@ function playChord(triadOption) {
 
 function playRiff(riff) {
   if (!riff) return;
-  const rootMidi = 60 + noteIndex(keySelect.value);
+  const position = handPosition(keySelect.value);
+  const positions = resolveRiffPositions(keySelect.value, riff, position);
   const step = 30000 / metro.bpm; // eighth notes
   stopSequence();
-  riff.degrees.forEach((degree, i) => {
+  positions.forEach((item, i) => {
     seqTimers.push(window.setTimeout(() => {
-      pluck(rootMidi + DEGREE_INTERVALS[degree]);
+      if (item.midi !== undefined) pluck(item.midi);
       const dot = [...document.querySelectorAll("#fretboard-riff .note.map-focus")]
         .find(node => node.textContent === String(i + 1));
       pingDot(dot);
@@ -565,20 +566,37 @@ function setBpm(value) {
   }
 }
 
+function riffBaseMidi(root, position) {
+  const lowFret = (noteIndex(root) - noteIndex("E") + 12) % 12; // root on the low-E string, 0-11
+  let base = 40 + lowFret; // low-E open string is MIDI 40
+  while (base - 40 < position.start) base += 12; // lift octave so the root sits at/above the hand position
+  return base;
+}
+
 function resolveRiffPositions(root, riff, position) {
+  const base = riffBaseMidi(root, position);
   return riff.degrees.map((degree, index) => {
-    const note = degreeNote(root, degree);
-    const string = STRINGS.find(candidate => firstFretInRange(note, candidate.note, position.start, position.end) !== null);
-    if (string) {
-      return {
-        degree,
-        index,
-        note,
-        string: string.label,
-        fret: firstFretInRange(note, string.note, position.start, position.end)
-      };
-    }
-    return { degree, index, note, string: null, fret: null };
+    const midi = base + DEGREE_INTERVALS[degree];
+    const note = NOTES[((midi % 12) + 12) % 12];
+    let best = null;
+    STRINGS.forEach(candidate => {
+      const fret = midi - candidate.midi;
+      if (fret < 0 || fret > MAX_FRET) return;
+      const dist = fret < position.start
+        ? position.start - fret
+        : (fret > position.end ? fret - position.end : 0);
+      if (!best || dist < best.dist || (dist === best.dist && fret < best.fret)) {
+        best = { string: candidate.label, fret, dist };
+      }
+    });
+    return {
+      degree,
+      index,
+      note,
+      midi,
+      string: best ? best.string : null,
+      fret: best ? best.fret : null
+    };
   });
 }
 
