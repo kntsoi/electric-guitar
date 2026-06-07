@@ -7,8 +7,8 @@
   "scope": "./",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
-  "background_color": "#eef2f1",
-  "theme_color": "#176b68",
+  "background_color": "#0E0A09",
+  "theme_color": "#0E0A09",
   "orientation": "portrait-primary",
   "categories": ["education", "music", "productivity"],
   "icons": [
@@ -33,9 +33,9 @@
   ],
   "shortcuts": [
     {
-      "name": "Scale Map",
-      "short_name": "Map",
-      "url": "./index.html#scales",
+      "name": "Scale Lab",
+      "short_name": "Scale",
+      "url": "./index.html#scale",
       "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
     },
     {

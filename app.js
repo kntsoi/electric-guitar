@@ -223,109 +223,11 @@ const RIFFS_BY_SCALE = {
   ]
 };
 
-
-const POWER_SHAPES_BY_CAGED = {
-  C: [
-    {
-      name: "C-shape upper 5-1",
-      entries: [{ string: "G", fret: 0 }, { string: "B", fret: 1 }],
-      fingers: "1 - 2",
-      use: "細聲 backup fragment，只彈兩條高弦，唔會霸住低頻。"
-    },
-    {
-      name: "C-shape root octave",
-      entries: [{ string: "A", fret: 3 }, { string: "G", fret: 5 }],
-      fingers: "1 - 3，mute D string",
-      use: "Lead hook 或 intro octave，用 palm mute 控制乾淨度。"
-    },
-    {
-      name: "C-shape A-root extension",
-      entries: [{ string: "A", fret: 3 }, { string: "D", fret: 5 }, { string: "G", fret: 5 }],
-      fingers: "1 - 3 - 4",
-      use: "由 C shape 嘅 A-string root 長出嚟，適合高把位 chorus hit。"
-    }
-  ],
-  A: [
-    {
-      name: "A-shape root stack",
-      entries: [{ string: "A", fret: 0 }, { string: "D", fret: 2 }, { string: "G", fret: 2 }],
-      fingers: "1 - 3 - 4",
-      use: "最常用 A-shape power grip，中頻清楚，適合 backup。"
-    },
-    {
-      name: "A-shape upper 5-1",
-      entries: [{ string: "D", fret: 2 }, { string: "G", fret: 2 }],
-      fingers: "3 - 4 或 barre",
-      use: "細聲 double-stop，配 delay 做 verse texture。"
-    },
-    {
-      name: "A-shape octave lead",
-      entries: [{ string: "A", fret: 0 }, { string: "G", fret: 2 }],
-      fingers: "1 - 3，mute D string",
-      use: "只保留 root octave，適合 lead line 同 response。"
-    }
-  ],
-  G: [
-    {
-      name: "G-shape low wide grip",
-      entries: [{ string: "E", fret: 3 }, { string: "A", fret: 5 }, { string: "D", fret: 5 }],
-      fingers: "1 - 3 - 4",
-      use: "G shape 低音 root 延伸出 classic power chord，適合大段 build。"
-    },
-    {
-      name: "G-shape middle 5-1",
-      entries: [{ string: "D", fret: 0 }, { string: "G", fret: 0 }],
-      fingers: "1 - 1 或 open-style barre",
-      use: "中把位 5-1 fragment，backup 可以彈得短而準。"
-    },
-    {
-      name: "G-shape spread power",
-      entries: [{ string: "D", fret: 0 }, { string: "G", fret: 0 }, { string: "e", fret: 3 }],
-      fingers: "1 - 1 - 4",
-      use: "比較開揚嘅 worship voicing，適合 ambient lead。"
-    }
-  ],
-  E: [
-    {
-      name: "E-shape low stack",
-      entries: [{ string: "E", fret: 0 }, { string: "A", fret: 2 }, { string: "D", fret: 2 }],
-      fingers: "1 - 3 - 4",
-      use: "最典型 rock power chord，chorus 或 bridge build 最直接。"
-    },
-    {
-      name: "E-shape upper 5-1",
-      entries: [{ string: "B", fret: 0 }, { string: "e", fret: 0 }],
-      fingers: "1 - 1",
-      use: "高音弦 fragment，適合 verse fill 或 dotted delay。"
-    },
-    {
-      name: "E-shape root octave",
-      entries: [{ string: "E", fret: 0 }, { string: "D", fret: 2 }],
-      fingers: "1 - 3，mute A string",
-      use: "Lead octave，彈 riff 時比完整 power chord 更清爽。"
-    }
-  ],
-  D: [
-    {
-      name: "D-shape upper stack",
-      entries: [{ string: "D", fret: 0 }, { string: "G", fret: 2 }, { string: "B", fret: 3 }],
-      fingers: "1 - 2 - 4",
-      use: "高把位 D-shape power voicing，適合 intro hook。"
-    },
-    {
-      name: "D-shape upper 5-1",
-      entries: [{ string: "G", fret: 2 }, { string: "B", fret: 3 }],
-      fingers: "2 - 4",
-      use: "最輕巧嘅 D-shape fragment，backup 唔會撞 vocal。"
-    },
-    {
-      name: "D-shape high 1-5",
-      entries: [{ string: "B", fret: 3 }, { string: "e", fret: 5 }],
-      fingers: "1 - 3",
-      use: "高音 lead dyad，適合 swells、response、ending tag。"
-    }
-  ]
-};
+const POWER_SHAPES = [
+  { name: "6 弦 root (E-shape)", rootStringLabel: "E", offsets: [{ string: "E", add: 0 }, { string: "A", add: 2 }, { string: "D", add: 2 }], fingers: "1 - 3 - 4", use: "最典型 rock power chord，chorus / bridge build 最直接。" },
+  { name: "5 弦 root (A-shape)", rootStringLabel: "A", offsets: [{ string: "A", add: 0 }, { string: "D", add: 2 }, { string: "G", add: 2 }], fingers: "1 - 3 - 4", use: "中頻清楚嘅 backup grip，避開低頻撞 bass。" },
+  { name: "4 弦 root (D-shape)", rootStringLabel: "D", offsets: [{ string: "D", add: 0 }, { string: "G", add: 2 }, { string: "B", add: 3 }], fingers: "1 - 3 - 4", use: "高把位 voicing，適合 intro hook、ambient lead。" }
+];
 
 const DEGREE_INTERVALS = {
   "1": 0,
@@ -342,14 +244,15 @@ const DEGREE_INTERVALS = {
   "8": 12
 };
 
+const TABS = ["scale", "triad", "riff", "power"];
+
 const keySelect = document.querySelector("#keySelect");
 const scaleSelect = document.querySelector("#scaleSelect");
 const shapeSelect = document.querySelector("#shapeSelect");
-const fretboard = document.querySelector("#fretboard");
-let mapMode = "scale";
+
+let activeTab = "scale";
 let selectedTriadIndex = 0;
 let selectedRiffIndex = 0;
-let selectedPowerIndex = 0;
 
 function scaleFamily(scaleKey) {
   if (["minor", "minor-pentatonic", "blues", "dorian", "phrygian", "harmonic-minor", "melodic-minor"].includes(scaleKey)) {
@@ -426,16 +329,6 @@ function degreeNote(root, degree) {
   return transpose(root, DEGREE_INTERVALS[degree]);
 }
 
-function firstFretForNoteOnString(targetNote, openNote, start, end) {
-  for (let fret = start; fret <= end; fret += 1) {
-    if (noteAt(openNote, fret) === targetNote) return fret;
-  }
-  for (let fret = 0; fret <= MAX_FRET; fret += 1) {
-    if (noteAt(openNote, fret) === targetNote) return fret;
-  }
-  return null;
-}
-
 function firstFretInRange(targetNote, openNote, start, end) {
   for (let fret = start; fret <= end; fret += 1) {
     if (noteAt(openNote, fret) === targetNote) return fret;
@@ -464,29 +357,18 @@ function resolveRiffPositions(root, riff, position) {
   });
 }
 
-function activePowerTemplates() {
-  return POWER_SHAPES_BY_CAGED[shapeSelect.value] || POWER_SHAPES_BY_CAGED.E;
+function rootFretOnString(root, stringLabel) {
+  const string = STRINGS.find(item => item.label === stringLabel);
+  return (noteIndex(root) - noteIndex(string.note) + 12) % 12;
 }
 
-function powerChordShapes(root, shape = activeCagedShape()) {
-  const offset = cagedOffset(root, shape);
-  return activePowerTemplates().map(template => ({
-    ...template,
-    cagedShape: shape.shape,
-    entries: template.entries.map(entry => ({
-      string: entry.string,
-      fret: offset + entry.fret
-    }))
-  }));
-}
-
-function activeMapData(root, position) {
+function buildMapData(mode, root, position) {
   const focus = new Map();
   const notes = scaleNotes(root, scaleSelect.value);
   const chordType = scaleFamily(scaleSelect.value) === "minor" ? "Minor" : "Major";
   const defaultChordTones = triadNotes(root, chordType);
 
-  if (mapMode === "triad") {
+  if (mode === "triad") {
     const options = activeTriads();
     const triad = options[selectedTriadIndex] || options[0];
     const triadNoteList = triadOptionNotes(root, triad);
@@ -502,12 +384,13 @@ function activeMapData(root, position) {
       notes: triadNoteList,
       chordTones: triadNoteList,
       focus,
+      showPosition: true,
       title: `${triad.label} · ${degreeNote(root, triad.rootDegree)} ${triad.type} · ${activeCagedShape().shape} shape`,
       detail: `${triadFormula(triad)}。${triad.use} 喺第 ${position.start}-${position.end} 格內用呢三粒音做 backup voicing 或 lead landing notes。`
     };
   }
 
-  if (mapMode === "riff") {
+  if (mode === "riff") {
     const riffs = activeRiffs();
     const riff = riffs[selectedRiffIndex] || riffs[0];
     resolveRiffPositions(root, riff, position).forEach(item => {
@@ -517,24 +400,21 @@ function activeMapData(root, position) {
       notes: riff.degrees.map(degree => degreeNote(root, degree)),
       chordTones: defaultChordTones,
       focus,
+      showPosition: true,
       title: `${riff.name} · ${root} · ${activeCagedShape().shape} shape`,
       detail: `數字係彈奏次序。先慢速跟住 ${riff.degrees.join(" - ")}，然後先加節奏：${riff.rhythm}。`
     };
   }
 
-  if (mapMode === "power") {
-    const shape = powerChordShapes(root)[selectedPowerIndex] || powerChordShapes(root)[0];
-    shape.entries.forEach((entry, index) => {
-      const note = noteAt(STRINGS.find(string => string.label === entry.string).note, entry.fret);
-      const tone = note === root ? "1" : "5";
-      if (entry.fret >= 0 && entry.fret <= MAX_FRET) focus.set(mapKey(entry.string, entry.fret), tone);
-    });
+  if (mode === "power") {
+    const fifth = transpose(root, 7);
     return {
-      notes: [root, transpose(root, 7)],
-      chordTones: [root, transpose(root, 7)],
+      notes: [root, fifth],
+      chordTones: [],
       focus,
-      title: `${root}5 · ${shape.name} · ${shape.cagedShape} shape`,
-      detail: `黑色標示係 power-chord tones：1 同 5；右上角小圓點係建議手指。Fingers: ${shape.fingers}。${shape.use}`
+      showPosition: false,
+      title: `${root}5 · 全指板 power chords`,
+      detail: `紅點 = root (1)，藍點 = 5th。任何一個 root 配上方一條弦 +2 格嘅 5th 就係 power chord；想加 octave 再上一條弦。`
     };
   }
 
@@ -542,9 +422,77 @@ function activeMapData(root, position) {
     notes,
     chordTones: defaultChordTones,
     focus,
+    showPosition: true,
     title: `${root} ${SCALES[scaleSelect.value].name} · ${activeCagedShape().shape} shape`,
     detail: `全部音階音顯示出嚟；第 ${position.start}-${position.end} 格係今次練習手位。`
   };
+}
+
+function buildFretboard(container, mode) {
+  const root = keySelect.value;
+  const position = handPosition(root);
+  const data = buildMapData(mode, root, position);
+  const showPos = data.showPosition !== false;
+  const fifth = transpose(root, 7);
+
+  const markerFrets = [3, 5, 7, 9, 12, 15, 17];
+
+  container.innerHTML = "";
+  container.appendChild(label("", "corner-label"));
+  for (let fret = 0; fret <= MAX_FRET; fret += 1) {
+    const fretLabel = label(fret === 0 ? "Open" : fret);
+    if (fret === 0) fretLabel.classList.add("open-head");
+    if (markerFrets.includes(fret)) fretLabel.classList.add("marker-fret");
+    if (showPos && fret >= position.start && fret <= position.end) fretLabel.classList.add("in-position");
+    container.appendChild(fretLabel);
+  }
+
+  STRINGS.forEach(string => {
+    container.appendChild(label(string.label, "string-label"));
+    for (let fret = 0; fret <= MAX_FRET; fret += 1) {
+      const note = noteAt(string.note, fret);
+      const cell = document.createElement("div");
+      cell.className = fret === 0 ? "open-cell" : "fret-cell";
+      if (fret > 0 && markerFrets.includes(fret)) cell.classList.add("marker-fret");
+      if (showPos && fret >= position.start && fret <= position.end) cell.classList.add("in-position");
+      const dot = document.createElement("span");
+      dot.className = "note";
+      dot.textContent = note;
+      if (data.notes.includes(note)) dot.classList.add("in-scale");
+      if (note === root) dot.classList.add("root");
+      if (data.chordTones.includes(note)) dot.classList.add("triad");
+      if (mode === "power" && note === fifth) dot.classList.add("fifth");
+      const focusLabel = data.focus.get(mapKey(string.label, fret));
+      if (focusLabel) {
+        dot.classList.add("map-focus");
+        dot.textContent = focusLabel;
+        dot.setAttribute("aria-label", `${note} ${string.label}${fret}, pattern step ${focusLabel}`);
+      }
+      const finger = fingerForFret(fret, position);
+      if (showPos && fret > 0 && data.notes.includes(note) && finger) {
+        const badge = document.createElement("small");
+        badge.className = "finger-badge";
+        badge.textContent = finger;
+        dot.appendChild(badge);
+      }
+      cell.appendChild(dot);
+      container.appendChild(cell);
+    }
+  });
+
+  return data;
+}
+
+function label(text, extra = "fret-label") {
+  const node = document.createElement("div");
+  node.className = extra;
+  node.textContent = text;
+  return node;
+}
+
+function setStatus(mode, data) {
+  document.querySelector(`#status-${mode}-title`).textContent = data.title;
+  document.querySelector(`#status-${mode}-detail`).textContent = data.detail;
 }
 
 function populateSelects() {
@@ -556,65 +504,7 @@ function populateSelects() {
   shapeSelect.value = "C";
 }
 
-function renderFretboard() {
-  const root = keySelect.value;
-  const position = handPosition(root);
-  const mapData = activeMapData(root, position);
-
-  fretboard.innerHTML = "";
-  fretboard.appendChild(label(""));
-  for (let fret = 0; fret <= MAX_FRET; fret += 1) {
-    const fretLabel = label(fret === 0 ? "Open" : fret);
-    if (fret >= position.start && fret <= position.end) fretLabel.classList.add("in-position");
-    fretboard.appendChild(fretLabel);
-  }
-
-  STRINGS.forEach(string => {
-    fretboard.appendChild(label(string.label, "string-label"));
-    for (let fret = 0; fret <= MAX_FRET; fret += 1) {
-      const note = noteAt(string.note, fret);
-      const cell = document.createElement("div");
-      cell.className = "fret-cell";
-      if (fret >= position.start && fret <= position.end) cell.classList.add("in-position");
-      const dot = document.createElement("span");
-      dot.className = "note";
-      dot.textContent = note;
-      if (mapData.notes.includes(note)) dot.classList.add("in-scale");
-      if (note === root) dot.classList.add("root");
-      if (mapData.chordTones.includes(note)) dot.classList.add("triad");
-      const focusLabel = mapData.focus.get(mapKey(string.label, fret));
-      if (focusLabel) {
-        dot.classList.add("map-focus");
-        dot.textContent = focusLabel;
-        dot.setAttribute("aria-label", `${note} ${string.label}${fret}, pattern step ${focusLabel}`);
-      }
-      const finger = fingerForFret(fret, position);
-      if (mapData.notes.includes(note) && finger) {
-        const badge = document.createElement("small");
-        badge.className = "finger-badge";
-        badge.textContent = finger;
-        dot.appendChild(badge);
-      }
-      cell.appendChild(dot);
-      fretboard.appendChild(cell);
-    }
-  });
-
-  document.querySelector("#mapModeTitle").textContent = mapData.title;
-  document.querySelector("#mapModeDetail").textContent = mapData.detail;
-  document.querySelectorAll("[data-map-mode]").forEach(button => {
-    button.classList.toggle("active", button.dataset.mapMode === mapMode);
-  });
-}
-
-function label(text, extra = "fret-label") {
-  const node = document.createElement("div");
-  node.className = extra;
-  node.textContent = text;
-  return node;
-}
-
-function renderCurrent() {
+function renderScaleFocus() {
   const root = keySelect.value;
   const active = SCALES[scaleSelect.value];
   const shape = activeCagedShape();
@@ -642,20 +532,30 @@ function renderCurrent() {
 }
 
 function renderScaleCards() {
+  const current = scaleSelect.value;
   document.querySelector("#scaleCards").innerHTML = Object.entries(SCALES)
     .map(([key, scale]) => `
-      <article class="card" data-scale-card="${key}">
+      <button class="card ${key === current ? "active" : ""}" type="button" data-scale-card="${key}">
         <strong>${scale.name}</strong>
         <p>${scale.formula}</p>
         <p>${scale.use}</p>
-      </article>
+      </button>
     `)
     .join("");
+  document.querySelectorAll("[data-scale-card]").forEach(button => {
+    button.addEventListener("click", () => {
+      if (scaleSelect.value === button.dataset.scaleCard) return;
+      scaleSelect.value = button.dataset.scaleCard;
+      selectedTriadIndex = 0;
+      selectedRiffIndex = 0;
+      update();
+    });
+  });
 }
 
 function renderCaged() {
   const activeShape = shapeSelect.value;
-  const selected = CAGED.find(item => item.shape === activeShape);
+  const selected = CAGED.find(item => item.shape === activeShape) || CAGED[0];
   document.querySelector("#cagedFlow").innerHTML = CAGED.map(item => `
     <button class="shape-pill ${item.shape === activeShape ? "active" : ""}" type="button" data-shape="${item.shape}">
       <b>${item.shape}</b>
@@ -675,7 +575,7 @@ function renderTriads() {
   const root = keySelect.value;
   const options = activeTriads();
   document.querySelector("#triadTable").innerHTML = options.map((triad, triadIndex) => `
-    <button class="triad-row ${triadIndex === selectedTriadIndex && mapMode === "triad" ? "active" : ""}" type="button" data-triad="${triadIndex}">
+    <button class="triad-row ${triadIndex === selectedTriadIndex ? "active" : ""}" type="button" data-triad="${triadIndex}">
       <strong>${triad.label} · ${degreeNote(root, triad.rootDegree)} ${triad.type}</strong>
       <span>${triadFormula(triad)} · ${triadOptionNotes(root, triad).join(" ")}</span>
       <small>${triad.use}</small>
@@ -684,11 +584,57 @@ function renderTriads() {
   document.querySelectorAll("[data-triad]").forEach(button => {
     button.addEventListener("click", () => {
       selectedTriadIndex = Number(button.dataset.triad);
-      mapMode = "triad";
       update();
-      document.querySelector("#scales").scrollIntoView({ behavior: "smooth", block: "start" });
     });
   });
+}
+
+function renderRiffs() {
+  const root = keySelect.value;
+  const position = handPosition(root);
+  const riffs = activeRiffs();
+  document.querySelector("#riffCards").innerHTML = riffs.map((riff, riffIndex) => {
+    const noteLine = riff.degrees.map(degree => `${degree}:${degreeNote(root, degree)}`).join(" · ");
+    const fretHints = resolveRiffPositions(root, riff, position)
+      .map(item => item.string ? `${item.note} ${item.string}${item.fret}` : `${item.note} outside position`)
+      .join("  ");
+
+    return `
+      <button class="riff-card ${riffIndex === selectedRiffIndex ? "active" : ""}" type="button" data-riff="${riffIndex}">
+        <strong>${riff.name}</strong>
+        <p class="riff-notes">${noteLine}</p>
+        <p>${riff.rhythm}</p>
+        <code>${fretHints}</code>
+        <p>${riff.use}</p>
+      </button>
+    `;
+  }).join("");
+  document.querySelectorAll("[data-riff]").forEach(button => {
+    button.addEventListener("click", () => {
+      selectedRiffIndex = Number(button.dataset.riff);
+      update();
+    });
+  });
+}
+
+function renderPowerShapes() {
+  const root = keySelect.value;
+  const fifth = transpose(root, 7);
+  document.querySelector("#powerShapeCards").innerHTML = POWER_SHAPES.map(shape => {
+    const base = rootFretOnString(root, shape.rootStringLabel);
+    const grip = shape.offsets
+      .map(off => `${off.string}${base + off.add}`)
+      .join("  ");
+    return `
+      <article class="power-card">
+        <strong>${root}5 · ${shape.name}</strong>
+        <p>Notes: ${root} + ${fifth}</p>
+        <code>${grip}</code>
+        <p>Fingers: ${shape.fingers}</p>
+        <p>${shape.use}</p>
+      </article>
+    `;
+  }).join("");
 }
 
 function renderTones() {
@@ -704,90 +650,96 @@ function renderTones() {
     .join("");
 }
 
-function renderRiffs() {
-  const root = keySelect.value;
-  const position = handPosition(root);
-  const riffs = activeRiffs();
-  document.querySelector("#riffCards").innerHTML = riffs.map((riff, riffIndex) => {
-    const noteLine = riff.degrees.map(degree => `${degree}:${degreeNote(root, degree)}`).join(" · ");
-    const fretHints = resolveRiffPositions(root, riff, position)
-      .map(item => item.string ? `${item.note} ${item.string}${item.fret}` : `${item.note} outside position`)
-      .join("  ");
-
-    return `
-      <article class="riff-card ${riffIndex === selectedRiffIndex && mapMode === "riff" ? "active" : ""}">
-        <strong>${riff.name}</strong>
-        <p class="riff-notes">${noteLine}</p>
-        <p>${riff.rhythm}</p>
-        <code>${fretHints}</code>
-        <p>${riff.use}</p>
-        <button type="button" class="show-map-button" data-riff="${riffIndex}">Show on CAGED map</button>
-      </article>
-    `;
-  }).join("");
-  document.querySelectorAll("[data-riff]").forEach(button => {
-    button.addEventListener("click", () => {
-      selectedRiffIndex = Number(button.dataset.riff);
-      mapMode = "riff";
-      update();
-      document.querySelector("#scales").scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-  });
-}
-
-function renderPowerChords() {
-  const root = keySelect.value;
-  const fifth = transpose(root, 7);
-  const cagedShape = activeCagedShape();
-  const shapes = powerChordShapes(root, cagedShape);
-
-  document.querySelector("#powerChordCards").innerHTML = shapes.map((shape, powerIndex) => `
-    <article class="power-card ${powerIndex === selectedPowerIndex && mapMode === "power" ? "active" : ""}">
-      <strong>${root}5 · ${shape.name}</strong>
-      <p>CAGED: ${cagedShape.shape} shape</p>
-      <p>Notes: ${root} + ${fifth}</p>
-      <code>${shape.entries.map(entry => `${entry.string}${entry.fret}`).join("  ")}</code>
-      <p>Fingers: ${shape.fingers}</p>
-      <p>${shape.use}</p>
-      <button type="button" class="show-map-button" data-power="${powerIndex}">Show on CAGED map</button>
-    </article>
-  `).join("");
-  document.querySelectorAll("[data-power]").forEach(button => {
-    button.addEventListener("click", () => {
-      selectedPowerIndex = Number(button.dataset.power);
-      mapMode = "power";
-      update();
-      document.querySelector("#scales").scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-  });
+function renderPracticeSummary() {
+  document.querySelector("#practiceSummary").textContent =
+    `${keySelect.value} ${SCALES[scaleSelect.value].name} · ${shapeSelect.value} shape`;
 }
 
 function normalizeSelections() {
-  selectedTriadIndex = Math.min(selectedTriadIndex, activeTriads().length - 1);
-  selectedRiffIndex = Math.min(selectedRiffIndex, activeRiffs().length - 1);
-  selectedPowerIndex = Math.min(selectedPowerIndex, activePowerTemplates().length - 1);
+  selectedTriadIndex = Math.min(Math.max(0, selectedTriadIndex), activeTriads().length - 1);
+  selectedRiffIndex = Math.min(Math.max(0, selectedRiffIndex), activeRiffs().length - 1);
 }
 
-function renderPracticeSummary() {
-  document.querySelector("#practiceSummary").textContent =
-    `${keySelect.value} ${SCALES[scaleSelect.value].name} · ${shapeSelect.value} shape · ${mapMode}`;
+function renderActiveView() {
+  document.querySelectorAll("[data-view]").forEach(view => {
+    view.hidden = view.dataset.view !== activeTab;
+  });
+  document.querySelectorAll(".bottom-menu [data-tab]").forEach(button => {
+    button.classList.toggle("active", button.dataset.tab === activeTab);
+  });
+
+  if (activeTab === "scale") {
+    setStatus("scale", buildFretboard(document.querySelector("#fretboard-scale"), "scale"));
+    renderScaleFocus();
+    renderScaleCards();
+  } else if (activeTab === "triad") {
+    renderTriads();
+    setStatus("triad", buildFretboard(document.querySelector("#fretboard-triad"), "triad"));
+  } else if (activeTab === "riff") {
+    renderRiffs();
+    setStatus("riff", buildFretboard(document.querySelector("#fretboard-riff"), "riff"));
+  } else if (activeTab === "power") {
+    setStatus("power", buildFretboard(document.querySelector("#fretboard-power"), "power"));
+    renderPowerShapes();
+  }
 }
 
 function update() {
   normalizeSelections();
-  renderFretboard();
-  renderCurrent();
+  renderActiveView();
   renderCaged();
-  renderTriads();
-  renderTones();
-  renderRiffs();
-  renderPowerChords();
   renderPracticeSummary();
 }
 
+function setTab(tab, { scroll = true } = {}) {
+  activeTab = TABS.includes(tab) ? tab : "scale";
+  if (`#${activeTab}` !== window.location.hash) {
+    window.history.replaceState(null, "", `#${activeTab}`);
+  }
+  update();
+  if (scroll) window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function openOverlay(name) {
+  const overlay = document.querySelector(`.overlay[data-overlay="${name}"]`);
+  if (!overlay) return;
+  if (name === "tone") renderTones();
+  overlay.hidden = false;
+  document.body.classList.add("overlay-open");
+}
+
+function closeOverlay() {
+  document.querySelectorAll(".overlay[data-overlay]").forEach(overlay => {
+    overlay.hidden = true;
+  });
+  document.body.classList.remove("overlay-open");
+}
+
+const HASH_TO_TAB = {
+  scale: "scale", scales: "scale", workbench: "scale", map: "scale",
+  triad: "triad", triads: "triad",
+  riff: "riff", riffs: "riff",
+  power: "power"
+};
+
+function applyHash({ scroll = false } = {}) {
+  const hash = (window.location.hash || "").slice(1).toLowerCase();
+  if (hash === "caged") {
+    setTab("scale", { scroll });
+    openOverlay("caged");
+    return;
+  }
+  if (hash === "mainstage" || hash === "tone") {
+    setTab("scale", { scroll });
+    openOverlay("tone");
+    return;
+  }
+  setTab(HASH_TO_TAB[hash] || "scale", { scroll });
+}
+
+// --- wiring ---
 populateSelects();
-renderScaleCards();
-update();
+applyHash();
 
 keySelect.addEventListener("change", update);
 shapeSelect.addEventListener("change", update);
@@ -797,86 +749,23 @@ scaleSelect.addEventListener("change", () => {
   update();
 });
 
-document.querySelectorAll("[data-map-mode]").forEach(button => {
-  button.addEventListener("click", () => {
-    mapMode = button.dataset.mapMode;
-    update();
-  });
+document.querySelectorAll(".bottom-menu [data-tab]").forEach(button => {
+  button.addEventListener("click", () => setTab(button.dataset.tab));
 });
 
-const navLinks = [...document.querySelectorAll(".bottom-menu a[href^='#']")];
-const observedSections = [...new Set(navLinks
-  .map(link => document.querySelector(link.getAttribute("href")))
-  .filter(Boolean))];
-let navFrame = null;
-let lockedNavId = null;
-let navLockUntil = 0;
-
-function normalizeHash() {
-  if (window.location.hash === "#workbench") {
-    window.history.replaceState(null, "", "#scales");
-  }
-}
-
-normalizeHash();
-
-function setActiveNav(sectionId) {
-  navLinks.forEach(link => {
-    link.classList.toggle("active", link.getAttribute("href") === `#${sectionId}`);
-  });
-}
-
-function updateActiveNavFromScroll() {
-  if (lockedNavId && Date.now() < navLockUntil) {
-    setActiveNav(lockedNavId);
-    return;
-  }
-  lockedNavId = null;
-
-  const hashId = (window.location.hash || "").slice(1);
-  const hashTarget = hashId ? document.getElementById(hashId) : null;
-  if (hashTarget) {
-    const hashTop = hashTarget.getBoundingClientRect().top;
-    if (hashTop >= -24 && hashTop <= 150) {
-      setActiveNav(hashId);
-      return;
-    }
-  }
-
-  const marker = window.scrollY + Math.min(220, window.innerHeight * 0.32);
-  const current = observedSections
-    .slice()
-    .sort((a, b) => a.offsetTop - b.offsetTop)
-    .reduce((active, section) => section.offsetTop <= marker ? section : active, observedSections[0]);
-  if (current) setActiveNav(current.id);
-}
-
-navLinks.forEach(link => {
-  link.addEventListener("click", () => {
-    const sectionId = link.getAttribute("href").slice(1);
-    lockedNavId = sectionId;
-    navLockUntil = Date.now() + 1000;
-    setActiveNav(sectionId);
-    window.setTimeout(() => setActiveNav(sectionId), 900);
-  });
+document.querySelectorAll("[data-open-overlay]").forEach(button => {
+  button.addEventListener("click", () => openOverlay(button.dataset.openOverlay));
 });
 
-window.addEventListener("hashchange", () => {
-  normalizeHash();
-  setActiveNav((window.location.hash || "#scales").slice(1));
-  window.requestAnimationFrame(updateActiveNavFromScroll);
+document.querySelectorAll("[data-close-overlay]").forEach(button => {
+  button.addEventListener("click", closeOverlay);
 });
 
-window.addEventListener("scroll", () => {
-  if (navFrame) return;
-  navFrame = window.requestAnimationFrame(() => {
-    navFrame = null;
-    updateActiveNavFromScroll();
-  });
-}, { passive: true });
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape") closeOverlay();
+});
 
-setActiveNav((window.location.hash || "#scales").slice(1));
-window.requestAnimationFrame(updateActiveNavFromScroll);
+window.addEventListener("hashchange", () => applyHash());
 
 let deferredInstallPrompt = null;
 const installAppButton = document.querySelector("#installAppButton");
