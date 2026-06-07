@@ -33,14 +33,8 @@
   ],
   "shortcuts": [
     {
-      "name": "Practice Lab",
-      "short_name": "Lab",
-      "url": "./index.html#workbench",
-      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
-    },
-    {
       "name": "Scale Map",
-      "short_name": "Scales",
+      "short_name": "Map",
       "url": "./index.html#scales",
       "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
     },

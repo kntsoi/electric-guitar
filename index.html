@@ -16,100 +16,68 @@
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
-    <a class="skip-link" href="#workbench">Skip to practice workbench</a>
-    <header class="app-header">
-      <section class="hero">
-        <div>
-          <p class="eyebrow">教會敬拜隊 · Pop Rock Electric Guitar</p>
-          <h1>Worship Electric Guitar Lab</h1>
-        </div>
-        <div class="hero-instrument" aria-hidden="true">
-          <div class="guitar-body"></div>
-          <div class="guitar-neck">
-            <span></span><span></span><span></span><span></span><span></span><span></span>
-          </div>
-          <div class="pickup one"></div>
-          <div class="pickup two"></div>
-        </div>
-      </section>
-    </header>
+    <a class="skip-link" href="#scales">Skip to scale map</a>
 
     <main>
-      <section id="workbench" class="workbench">
-        <div class="workbench-header">
-          <div>
-            <p class="eyebrow">Core Selector</p>
-            <h2>Key · Scale · CAGED Shape</h2>
+      <p id="practiceSummary" hidden>C Major Pentatonic · C shape · scale</p>
+
+      <section id="scales" class="section-grid">
+        <article class="panel wide">
+          <div class="section-title">
+            <p class="eyebrow">Scale Map</p>
+            <h2>音階指板圖</h2>
           </div>
-          <p id="practiceSummary" class="summary-pill">C Major Pentatonic · C shape · scale</p>
-        </div>
+          <div id="fretboard" class="fretboard" aria-label="Interactive fretboard"></div>
+          <section class="map-selector core-selector" aria-label="Key, scale, and CAGED shape controls">
+            <label class="selector-card">
+              <span class="selector-index">01</span>
+              <span class="selector-name">Key</span>
+              <select id="keySelect"></select>
+            </label>
+            <label class="selector-card">
+              <span class="selector-index">02</span>
+              <span class="selector-name">Scale</span>
+              <select id="scaleSelect"></select>
+            </label>
+            <label class="selector-card">
+              <span class="selector-index">03</span>
+              <span class="selector-name">CAGED Shape</span>
+              <select id="shapeSelect"></select>
+            </label>
+          </section>
+          <div class="map-toolbar" aria-label="Fretboard map mode">
+            <button class="map-mode active" type="button" data-map-mode="scale">Scale</button>
+            <button class="map-mode" type="button" data-map-mode="triad">Triad</button>
+            <button class="map-mode" type="button" data-map-mode="riff">Riff</button>
+            <button class="map-mode" type="button" data-map-mode="power">Power</button>
+          </div>
+          <div class="map-status">
+            <strong id="mapModeTitle">Scale map</strong>
+            <span id="mapModeDetail">All scale tones in the current CAGED position.</span>
+          </div>
+          <div class="legend">
+            <span><b class="root-dot"></b>Root</span>
+            <span><b class="tone-dot"></b>Scale tone</span>
+            <span><b class="triad-dot"></b>Triad tone</span>
+            <span><b class="position-dot"></b>Current hand position</span>
+            <span><b class="focus-dot"></b>Selected pattern</span>
+          </div>
+        </article>
 
-        <section class="control-strip core-selector" aria-label="Interactive guitar controls">
-          <label class="selector-card">
-            <span class="selector-index">01</span>
-            <span class="selector-name">Key</span>
-            <select id="keySelect"></select>
-          </label>
-          <label class="selector-card">
-            <span class="selector-index">02</span>
-            <span class="selector-name">Scale</span>
-            <select id="scaleSelect"></select>
-          </label>
-          <label class="selector-card">
-            <span class="selector-index">03</span>
-            <span class="selector-name">CAGED Shape</span>
-            <select id="shapeSelect"></select>
-          </label>
-        </section>
-
-        <nav class="workflow-steps" aria-label="Practice workflow">
-          <a href="#scales"><b>1</b><span>Map</span><small>Scale / triad / riff / power</small></a>
-          <a href="#triads"><b>2</b><span>Target</span><small>Chord tones and voicings</small></a>
-          <a href="#riffs"><b>3</b><span>Apply</span><small>Riffs and lead movement</small></a>
-          <a href="#mainstage"><b>4</b><span>Tone</span><small>MainStage patches</small></a>
-        </nav>
-
-        <section id="scales" class="section-grid">
-          <article class="panel wide">
-            <div class="section-title">
-              <p class="eyebrow">Scale Map</p>
-              <h2>音階指板圖</h2>
-            </div>
-            <div id="fretboard" class="fretboard" aria-label="Interactive fretboard"></div>
-            <div class="map-toolbar" aria-label="Fretboard map mode">
-              <button class="map-mode active" type="button" data-map-mode="scale">Scale</button>
-              <button class="map-mode" type="button" data-map-mode="triad">Triad</button>
-              <button class="map-mode" type="button" data-map-mode="riff">Riff</button>
-              <button class="map-mode" type="button" data-map-mode="power">Power</button>
-            </div>
-            <div class="map-status">
-              <strong id="mapModeTitle">Scale map</strong>
-              <span id="mapModeDetail">All scale tones in the current CAGED position.</span>
-            </div>
-            <div class="legend">
-              <span><b class="root-dot"></b>Root</span>
-              <span><b class="tone-dot"></b>Scale tone</span>
-              <span><b class="triad-dot"></b>Triad tone</span>
-              <span><b class="position-dot"></b>Current hand position</span>
-              <span><b class="focus-dot"></b>Selected pattern</span>
-            </div>
-          </article>
-
-          <article class="panel focus-panel">
-            <div class="section-title">
-              <p class="eyebrow">Current Focus</p>
-              <h2 id="currentTitle">C Major Pentatonic</h2>
-            </div>
-            <p id="scaleFormula" class="formula"></p>
-            <p id="scaleUse" class="body-copy"></p>
-            <div id="noteChips" class="chip-row"></div>
-            <div class="finger-panel">
-              <h3 id="positionTitle">手指位</h3>
-              <p id="positionAdvice" class="body-copy"></p>
-              <div id="fingerGuide" class="finger-guide"></div>
-            </div>
-          </article>
-        </section>
+        <article class="panel focus-panel">
+          <div class="section-title">
+            <p class="eyebrow">Current Focus</p>
+            <h2 id="currentTitle">C Major Pentatonic</h2>
+          </div>
+          <p id="scaleFormula" class="formula"></p>
+          <p id="scaleUse" class="body-copy"></p>
+          <div id="noteChips" class="chip-row"></div>
+          <div class="finger-panel">
+            <h3 id="positionTitle">手指位</h3>
+            <p id="positionAdvice" class="body-copy"></p>
+            <div id="fingerGuide" class="finger-guide"></div>
+          </div>
+        </article>
       </section>
 
       <section class="learning-list">
@@ -246,9 +214,9 @@
     </footer>
 
     <nav class="bottom-menu" aria-label="Quick practice menu">
-      <a href="#workbench">
+      <a href="#scales">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 12 5l8 6.5"></path><path d="M6.5 10.5V20h11V10.5"></path><path d="M9.5 20v-5h5v5"></path></svg>
-        <span>Lab</span>
+        <span>Map</span>
       </a>
       <a href="#caged">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14"></path><path d="M5 10h14"></path><path d="M5 15h14"></path><path d="M5 20h14"></path><path d="M8 4v17"></path><path d="M13 4v17"></path><path d="M18 4v17"></path></svg>

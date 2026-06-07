@@ -812,6 +812,14 @@ let navFrame = null;
 let lockedNavId = null;
 let navLockUntil = 0;
 
+function normalizeHash() {
+  if (window.location.hash === "#workbench") {
+    window.history.replaceState(null, "", "#scales");
+  }
+}
+
+normalizeHash();
+
 function setActiveNav(sectionId) {
   navLinks.forEach(link => {
     link.classList.toggle("active", link.getAttribute("href") === `#${sectionId}`);
@@ -854,7 +862,8 @@ navLinks.forEach(link => {
 });
 
 window.addEventListener("hashchange", () => {
-  setActiveNav((window.location.hash || "#workbench").slice(1));
+  normalizeHash();
+  setActiveNav((window.location.hash || "#scales").slice(1));
   window.requestAnimationFrame(updateActiveNavFromScroll);
 });
 
@@ -866,7 +875,7 @@ window.addEventListener("scroll", () => {
   });
 }, { passive: true });
 
-setActiveNav((window.location.hash || "#workbench").slice(1));
+setActiveNav((window.location.hash || "#scales").slice(1));
 window.requestAnimationFrame(updateActiveNavFromScroll);
 
 let deferredInstallPrompt = null;
