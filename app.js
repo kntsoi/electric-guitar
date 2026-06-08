@@ -253,6 +253,8 @@ const shapeSelect = document.querySelector("#shapeSelect");
 let activeTab = "scale";
 let selectedTriadIndex = 0;
 let selectedRiffIndex = 0;
+let fingerSystem = "caged"; // "caged" | "3nps" | "penta" — only affects the Scale tab
+let scalePos = 0;           // active position/box index for 3NPS or pentatonic systems
 
 function scaleFamily(scaleKey) {
   if (["minor", "minor-pentatonic", "blues", "dorian", "phrygian", "harmonic-minor", "melodic-minor"].includes(scaleKey)) {
@@ -264,6 +266,70 @@ function scaleFamily(scaleKey) {
 
 function noteIndex(note) {
   return NOTES.indexOf(note);
+}
+
+function scaleDegreeLabels(scaleKey) {
+  return SCALES[scaleKey].formula.split(" ");
+}
+
+function isPentatonicFamily(scaleKey) {
+  return SCALES[scaleKey].intervals.length < 7;
+}
+
+function secondarySystem(scaleKey) {
+  return isPentatonicFamily(scaleKey) ? "penta" : "3nps";
+}
+
+function positionCount(scaleKey) {
+  return SCALES[scaleKey].intervals.length;
+}
+
+function normalizeSystem() {
+  if (fingerSystem !== "caged" && fingerSystem !== secondarySystem(scaleSelect.value)) {
+    fingerSystem = secondarySystem(scaleSelect.value);
+  }
+  scalePos = Math.min(Math.max(0, scalePos), positionCount(scaleSelect.value) - 1);
+}
+
+// Pentatonic / blues box: a 4-fret window anchored on the chosen scale degree (low-E root).
+function pentaWindow(root, scaleKey) {
+  const intervals = SCALES[scaleKey].intervals;
+  const start = (rootFretOnString(root, "E") + intervals[scalePos]) % 12;
+  return { offset: start, start, end: Math.min(MAX_FRET, start + 3) };
+}
+
+// 3-notes-per-string box: exactly 3 scale tones on every string, climbing the neck.
+function build3NPSBox(root, scaleKey) {
+  const intervals = SCALES[scaleKey].intervals;
+  const labels = scaleDegreeLabels(scaleKey);
+  const rootPc = noteIndex(root);
+  const pcLabel = new Map();
+  intervals.forEach((interval, i) => pcLabel.set((rootPc + interval) % 12, labels[i]));
+  const pcSet = new Set(pcLabel.keys());
+  const nextTone = midi => {
+    let next = midi + 1;
+    while (!pcSet.has(((next % 12) + 12) % 12)) next += 1;
+    return next;
+  };
+  const startFret = (rootFretOnString(root, "E") + intervals[scalePos]) % 12;
+  let cur = 40 + startFret; // low-E open = MIDI 40
+  const box = [];
+  [...STRINGS].reverse().forEach(string => {
+    const trio = [];
+    for (let i = 0; i < 3; i += 1) { trio.push(cur); cur = nextTone(cur); }
+    const frets = trio.map(midi => midi - string.midi);
+    const midFinger = (frets[1] - frets[0]) <= (frets[2] - frets[1]) ? 2 : 3;
+    const fingers = [1, midFinger, 4];
+    trio.forEach((midi, i) => {
+      box.push({
+        stringLabel: string.label,
+        fret: frets[i],
+        degree: pcLabel.get(((midi % 12) + 12) % 12),
+        finger: String(fingers[i])
+      });
+    });
+  });
+  return box;
 }
 
 function transpose(root, interval) {
@@ -661,13 +727,34 @@ function buildMapData(mode, root, position) {
     };
   }
 
+  if (fingerSystem === "3nps") {
+    const fingerMap = new Map();
+    build3NPSBox(root, scaleSelect.value).forEach(item => {
+      if (item.fret < 0 || item.fret > MAX_FRET) return;
+      focus.set(mapKey(item.stringLabel, item.fret), item.degree);
+      fingerMap.set(mapKey(item.stringLabel, item.fret), item.finger);
+    });
+    return {
+      notes,
+      chordTones: defaultChordTones,
+      focus,
+      fingerMap,
+      showPosition: false,
+      title: `${root} ${SCALES[scaleSelect.value].name} · 3NPS Pos ${scalePos + 1}`,
+      detail: `每弦三粒音（3 NPS），圈內數字 = 音級。順住七個 position 爬上去就連通成條 neck；高把位 = 同一形狀 +12 格。紅／藍圈仍然係 chord-tone 落點。`
+    };
+  }
+
+  const scalePosition = fingerSystem === "penta" ? pentaWindow(root, scaleSelect.value) : position;
+  const systemLabel = fingerSystem === "penta" ? `Box ${scalePos + 1}` : `${activeCagedShape().shape} shape`;
   return {
     notes,
     chordTones: defaultChordTones,
     focus,
     showPosition: true,
-    title: `${root} ${SCALES[scaleSelect.value].name} · ${activeCagedShape().shape} shape`,
-    detail: `全部音階音顯示出嚟；第 ${position.start}-${position.end} 格係今次練習手位。`
+    position: scalePosition,
+    title: `${root} ${SCALES[scaleSelect.value].name} · ${systemLabel}`,
+    detail: `全部音階音顯示出嚟；第 ${scalePosition.start}-${scalePosition.end} 格係今次練習手位。`
   };
 }
 
@@ -676,6 +763,7 @@ function buildFretboard(container, mode) {
   const position = handPosition(root);
   const data = buildMapData(mode, root, position);
   const showPos = data.showPosition !== false;
+  const pos = data.position || position;
   const fifth = transpose(root, 7);
 
   const markerFrets = [3, 5, 7, 9, 12, 15, 17];
@@ -686,7 +774,7 @@ function buildFretboard(container, mode) {
     const fretLabel = label(fret === 0 ? "Open" : fret);
     if (fret === 0) fretLabel.classList.add("open-head");
     if (markerFrets.includes(fret)) fretLabel.classList.add("marker-fret");
-    if (showPos && fret >= position.start && fret <= position.end) fretLabel.classList.add("in-position");
+    if (showPos && fret >= pos.start && fret <= pos.end) fretLabel.classList.add("in-position");
     container.appendChild(fretLabel);
   }
 
@@ -697,7 +785,7 @@ function buildFretboard(container, mode) {
       const cell = document.createElement("div");
       cell.className = fret === 0 ? "open-cell" : "fret-cell";
       if (fret > 0 && markerFrets.includes(fret)) cell.classList.add("marker-fret");
-      if (showPos && fret >= position.start && fret <= position.end) cell.classList.add("in-position");
+      if (showPos && fret >= pos.start && fret <= pos.end) cell.classList.add("in-position");
       const dot = document.createElement("span");
       dot.className = "note";
       dot.textContent = note;
@@ -712,8 +800,13 @@ function buildFretboard(container, mode) {
         dot.textContent = focusLabel;
         dot.setAttribute("aria-label", `${note} ${string.label}${fret}, pattern step ${focusLabel}`);
       }
-      const finger = fingerForFret(fret, position);
-      if (showPos && fret > 0 && data.notes.includes(note) && finger) {
+      let finger = "";
+      if (data.fingerMap) {
+        finger = data.fingerMap.get(mapKey(string.label, fret)) || "";
+      } else if (showPos && fret > 0 && data.notes.includes(note)) {
+        finger = fingerForFret(fret, pos);
+      }
+      if (finger) {
         const badge = document.createElement("small");
         badge.className = "finger-badge";
         badge.textContent = finger;
@@ -748,31 +841,94 @@ function populateSelects() {
   shapeSelect.value = "C";
 }
 
-function renderScaleFocus() {
-  const root = keySelect.value;
-  const active = SCALES[scaleSelect.value];
-  const shape = activeCagedShape();
-  const position = handPosition(root, shape);
-  document.querySelector("#currentTitle").textContent = `${root} ${active.name}`;
-  document.querySelector("#scaleFormula").textContent = active.formula;
-  document.querySelector("#scaleUse").textContent = active.use;
-  document.querySelector("#noteChips").innerHTML = scaleNotes(root, scaleSelect.value)
-    .map(note => `<span class="chip">${note}</span>`)
-    .join("");
-  document.querySelector("#positionTitle").textContent = `${root} · ${shape.shape} shape 手指位`;
-  document.querySelector("#positionAdvice").textContent = `集中練第 ${position.start}-${position.end} 格。食指負責第 ${position.start} 格，中指第 ${position.start + 1} 格，無名指第 ${position.start + 2} 格，尾指第 ${position.start + 3} 至 ${position.end} 格；先慢速準確，再加速度。`;
-  document.querySelector("#fingerGuide").innerHTML = [
-    ["1", "食指", `第 ${position.start} 格 / barre anchor`],
-    ["2", "中指", `第 ${position.start + 1} 格`],
-    ["3", "無名指", `第 ${position.start + 2} 格`],
-    ["4", "尾指", `第 ${position.start + 3}-${position.end} 格`]
-  ].map(item => `
+function fingerGuideHTML(rows) {
+  return rows.map(item => `
     <div class="finger-card">
       <b>${item[0]}</b>
       <span>${item[1]}</span>
       <small>${item[2]}</small>
     </div>
   `).join("");
+}
+
+function renderScaleFocus() {
+  const root = keySelect.value;
+  const active = SCALES[scaleSelect.value];
+  document.querySelector("#currentTitle").textContent = `${root} ${active.name}`;
+  document.querySelector("#scaleFormula").textContent = active.formula;
+  document.querySelector("#scaleUse").textContent = active.use;
+  document.querySelector("#noteChips").innerHTML = scaleNotes(root, scaleSelect.value)
+    .map(note => `<span class="chip">${note}</span>`)
+    .join("");
+
+  const titleNode = document.querySelector("#positionTitle");
+  const adviceNode = document.querySelector("#positionAdvice");
+  const guideNode = document.querySelector("#fingerGuide");
+
+  if (fingerSystem === "3nps") {
+    titleNode.textContent = `3NPS · Position ${scalePos + 1}`;
+    adviceNode.textContent = "每條弦彈三粒音，食指 → 中指（或無名指）→ 尾指順住 roll。先 alternate picking 慢練，再連去下一個 position；目標係由低把位一路爬到高把位都唔斷。";
+    guideNode.innerHTML = fingerGuideHTML([
+      ["3", "每弦音數", "固定三粒，平均對稱"],
+      ["7", "Position", "七個形狀鋪滿成條 neck"],
+      ["+12", "高把位", "同一形狀上一個八度"],
+      ["1·3·5", "Chord tone", "紅／藍圈仍然係落點"]
+    ]);
+    return;
+  }
+
+  const position = fingerSystem === "penta" ? pentaWindow(root, scaleSelect.value) : handPosition(root, activeCagedShape());
+  const tag = fingerSystem === "penta" ? `Box ${scalePos + 1}` : `${activeCagedShape().shape} shape`;
+  titleNode.textContent = `${root} · ${tag} 手指位`;
+  adviceNode.textContent = `集中練第 ${position.start}-${position.end} 格。食指負責第 ${position.start} 格，中指第 ${position.start + 1} 格，無名指第 ${position.start + 2} 格，尾指第 ${position.start + 3} 至 ${position.end} 格；先慢速準確，再加速度。`;
+  guideNode.innerHTML = fingerGuideHTML([
+    ["1", "食指", `第 ${position.start} 格 / barre anchor`],
+    ["2", "中指", `第 ${position.start + 1} 格`],
+    ["3", "無名指", `第 ${position.start + 2} 格`],
+    ["4", "尾指", `第 ${position.start + 3}-${position.end} 格`]
+  ]);
+}
+
+function renderFingerSystem() {
+  const seg = document.querySelector("#systemSeg");
+  const pills = document.querySelector("#posPills");
+  if (!seg || !pills) return;
+  const secondary = secondarySystem(scaleSelect.value);
+  const options = [
+    { id: "caged", label: "CAGED" },
+    { id: secondary, label: secondary === "3nps" ? "3NPS" : "5-Box" }
+  ];
+  seg.innerHTML = options.map(option => `
+    <button type="button" class="seg-btn ${fingerSystem === option.id ? "active" : ""}" data-system="${option.id}">${option.label}</button>
+  `).join("");
+  seg.querySelectorAll("[data-system]").forEach(button => {
+    button.addEventListener("click", () => {
+      if (fingerSystem === button.dataset.system) return;
+      fingerSystem = button.dataset.system;
+      scalePos = 0;
+      update();
+    });
+  });
+
+  if (fingerSystem === "caged") {
+    pills.innerHTML = "";
+    pills.hidden = true;
+    return;
+  }
+  pills.hidden = false;
+  const prefix = fingerSystem === "3nps" ? "Pos" : "Box";
+  const count = positionCount(scaleSelect.value);
+  let html = "";
+  for (let i = 0; i < count; i += 1) {
+    html += `<button type="button" class="pos-pill ${i === scalePos ? "active" : ""}" data-pos="${i}">${prefix} ${i + 1}</button>`;
+  }
+  pills.innerHTML = html;
+  pills.querySelectorAll("[data-pos]").forEach(button => {
+    button.addEventListener("click", () => {
+      scalePos = Number(button.dataset.pos);
+      update();
+    });
+  });
 }
 
 function renderScaleCards() {
@@ -792,6 +948,7 @@ function renderScaleCards() {
       scaleSelect.value = button.dataset.scaleCard;
       selectedTriadIndex = 0;
       selectedRiffIndex = 0;
+      scalePos = 0;
       update();
     });
   });
@@ -913,8 +1070,13 @@ function renderTones() {
 }
 
 function renderPracticeSummary() {
+  let systemTag = `${shapeSelect.value} shape`;
+  if (activeTab === "scale") {
+    if (fingerSystem === "3nps") systemTag = `3NPS Pos ${scalePos + 1}`;
+    else if (fingerSystem === "penta") systemTag = `Box ${scalePos + 1}`;
+  }
   document.querySelector("#practiceSummary").textContent =
-    `${keySelect.value} ${SCALES[scaleSelect.value].name} · ${shapeSelect.value} shape`;
+    `${keySelect.value} ${SCALES[scaleSelect.value].name} · ${systemTag}`;
 }
 
 function normalizeSelections() {
@@ -931,6 +1093,7 @@ function renderActiveView() {
   });
 
   if (activeTab === "scale") {
+    renderFingerSystem();
     setStatus("scale", buildFretboard(document.querySelector("#fretboard-scale"), "scale"));
     renderScaleFocus();
     renderScaleCards();
@@ -948,6 +1111,7 @@ function renderActiveView() {
 
 function update() {
   normalizeSelections();
+  normalizeSystem();
   renderActiveView();
   renderCaged();
   renderPracticeSummary();
@@ -1009,6 +1173,7 @@ shapeSelect.addEventListener("change", update);
 scaleSelect.addEventListener("change", () => {
   selectedTriadIndex = 0;
   selectedRiffIndex = 0;
+  scalePos = 0;
   update();
 });
 

@@ -1012,6 +1012,79 @@ code {
   color: var(--red-ink);
 }
 
+/* ---------- Fingering system toggle ---------- */
+.finger-system {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.fs-label {
+  font-family: var(--font-display);
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.seg {
+  display: inline-flex;
+  padding: 3px;
+  gap: 3px;
+  background: var(--panel-2);
+  border: 1px solid var(--edge);
+  border-radius: 999px;
+}
+
+.seg-btn {
+  border: 0;
+  border-radius: 999px;
+  padding: 6px 16px;
+  background: transparent;
+  color: var(--ink-dim);
+  font: inherit;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease;
+}
+
+.seg-btn.active {
+  background: var(--red);
+  color: #fff;
+}
+
+.pos-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pos-pill {
+  border: 1px solid var(--edge);
+  border-radius: 999px;
+  padding: 5px 12px;
+  background: var(--panel-2);
+  color: var(--ink-dim);
+  font: inherit;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color .2s ease, background .2s ease, color .2s ease;
+}
+
+.pos-pill:hover {
+  border-color: var(--edge-strong);
+}
+
+.pos-pill.active {
+  border-color: var(--red);
+  background: var(--red-soft);
+  color: var(--red-ink);
+}
+
 /* ---------- Tone overlay ---------- */
 .tone-card {
   display: grid;
